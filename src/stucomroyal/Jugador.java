@@ -14,13 +14,14 @@ import java.util.List;
  */
 
 // nombre de usuario, password y número de trofeos conseguidos
-public class Jugador {
+public class Jugador{
     
     private String nombreUsuario;
 
     private String Password;
     
-    private List<Jugador> misCartas;
+    
+    private List<Cartas> CartasJuego;
 
     public String getPassword() {
         return Password;
@@ -52,9 +53,25 @@ public class Jugador {
     public Jugador(String nombreUsuario, String Password, int numeroTrofes) {
         this.nombreUsuario = nombreUsuario;
         this.Password = Password;
-        this.numeroTrofes = numeroTrofes;
-        misCartas = new ArrayList<>();
+        this.CartasJuego = CartasJuego;
+        this.numeroTrofes = numeroTrofes;  
+        CartasJuego = new ArrayList<>();
+
     }
+
+    public List<Cartas> getCartasJuego() {
+        return CartasJuego;
+    }
+
+    public void setCartasJuego(List<Cartas> CartasJuego) {
+        this.CartasJuego = CartasJuego;
+    }
+
+  
+
+ 
+
+
 
    
 }

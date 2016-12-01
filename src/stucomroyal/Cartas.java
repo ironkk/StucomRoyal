@@ -20,6 +20,8 @@ public class Cartas implements Cloneable {
     private int costeElixir;
 
     private int nivelVida;
+    
+     private Jugador CartasJuego;
 
     public Cartas(String nombre, int costeElixir, int nivelVida) {
         this.nombre = nombre;

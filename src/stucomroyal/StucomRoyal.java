@@ -8,8 +8,10 @@ package stucomroyal;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Optional;
+import java.util.Set;
 import static stucomroyal.Entrada.pedirCadena;
 import static stucomroyal.Entrada.pedirEntero;
 
@@ -24,7 +26,6 @@ public class StucomRoyal {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        int contador = 0;
 
         List<Cartas> misCartas = new ArrayList<>(4);
 
@@ -53,77 +54,145 @@ public class StucomRoyal {
         misJugadores.add(debuen);
         misJugadores.add(manzano);
 
-        //a) Conseguir cartas
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int opcion;
 
-            String usuario;
-            usuario = pedirCadena("¿Usuario");
-            String contraseña;
-            contraseña = pedirCadena("¿Contraseña?");
-            existeJugador(misJugadores, usuario, contraseña);
+        do {
 
-            if (existeJugador(misJugadores, usuario, contraseña) == true) {
-                for (Cartas c : misCartas) {
-                    //listado cartas
-                    System.out.println(contador + misCartas.toString());
-                    // cartas añadir
-                    contador++;
-                }
+            mostrarMenu();
+            opcion = Entrada.pedirEntero("Escoge una opción");
 
-                //Cada vez que escoja una carta se comprobará que no la tenga
-                int cartasAñadir;
-                cartasAñadir = pedirEntero("¿Qué Cartas quieres añadir?");
-                if (misCartas.get(0)) {
-                    TipoTropa p1 = (TipoTropa) misCartas.get(0).clone();
-                    if (existeCarta(misCartas, usuario)) {
-                        System.out.println("YA EXISTE ESTA CARTA QUE QUIERES AÑADIR");
-                    } else {
-                        misCartas.add(p1);
-                    }
-                } else if (misCartas.get(1)) {
-                    TipoTropa p2 = (TipoTropa) misCartas.get(1).clone();
-                    if () {
-                        System.out.println("YA EXISTE ESTA CARTA QUE QUIERES AÑADIR");
-                    } else {
-                        misCartas.add(p2);
-                    }
+            switch (opcion) {
+                case 1:
+                    ConseguirCartas(misJugadores, misCartas);
+                    break;
+                case 2:
+                    Batalla(misJugadores, misCartas);
+                    break;
+                case 3:
+                    RankingJugadoresNumeroTrofeos();
+                    break;
+                case 4:
+                    System.out.println("Adiós!");
+                    System.exit(0);
+                    break;
 
-                } else if (misCartas.get(2)) {
-                    TipoTropa p3 = (TipoTropa) misCartas.get(2).clone();
-                    if () {
-                        System.out.println("YA EXISTE ESTA CARTA QUE QUIERES AÑADIR");
-                    } else {
-                        misCartas.add(p3);
-                    }
-                } else if (misCartas.get(3)) {
-
-                    TipoTropa p4 = (TipoTropa) misCartas.get(3).clone();
-                    if () {
-                        System.out.println("YA EXISTE ESTA CARTA QUE QUIERES AÑADIR");
-                    } else {
-                        misCartas.add(p4);
-                    }
-                } else if (misCartas.get(4)) {
-                    TipoTropa p5 = (TipoTropa) misCartas.get(4).clone();
-                    if () {
-                        System.out.println("YA EXISTE ESTA CARTA QUE QUIERES AÑADIR");
-                    }
-                } else if (misCartas.get(5)) {
-                    TipoTropa p6 = (TipoTropa) misCartas.get(5).clone();
-                    if () {
-                        misCartas.add(p6);
-                    }
-                }
-            } else {
-                System.out.println("No estas dado de alta");
+                default:
+                    System.out.println("Opción incorrecta.");
 
             }
 
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(ex);
+        } while (opcion != 0);
+
+    }
+
+    private static void mostrarMenu() {
+        System.out.println("*** StucomRoyal ***");
+        System.out.println("1. Conseguir cartas.");
+        System.out.println("2. Batalla.");
+        System.out.println("3. Obtener el ránking de jugadores por no de trofeos.");
+        System.out.println("4. Salir");
+
+    }
+
+    public static void ConseguirCartas(List<Jugador> misJugadores, List<Cartas> misCartas) {
+        int contador = 0;
+        String usuario;
+        usuario = pedirCadena("¿Usuario");
+        String contraseña;
+        contraseña = pedirCadena("¿Contraseña?");
+
+        if (existeJugador(misJugadores, usuario, contraseña) == true) {
+            for (Cartas c : misCartas) {
+                System.out.println(contador + " " + c);
+                contador++;
+            }
+
+            int cartasAñadir = pedirEntero("¿Qué Cartas quieres añadir?");
+            // Necesitamos traer al jugador
+            Jugador jugadorActual = obtenerJugadorPorUsuario(misJugadores, usuario);
+            // Comprobamos si ya tiene 6 cartas
+            if (jugadorActual.getCartasJuego().size() < 6) {
+                // traemos la carta con el nº que ha puesto el usuario
+                Cartas cartaSeleccionada = misCartas.get(cartasAñadir);
+                // Comprobamos si el jugador la tiene
+                if (buscarCarta(jugadorActual.getCartasJuego(), cartaSeleccionada) == false) {
+                    // Se la añadimos a las cartas del jugador
+                    jugadorActual.getCartasJuego().add(cartaSeleccionada);
+                    System.out.println("Carta Añadida :D");
+                } else {
+                    System.out.println("Ya tienes esa Carta!");
+                }
+            } else {
+                System.out.println("Tienes el cupo de cartas lleno");
+                System.out.println("Lánzate a la batalla!");
+            }
+
+        } else {
+            System.out.println("No estas dado de alta");
 
         }
+
+    }
+
+    public static void Batalla(List<Jugador> misJugadores, List<Cartas> misCartas) {
+        try {
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            int contador = 0;
+            int cartas = 0;
+            int CartasElegidas = 0;
+            int jugadores = 0;
+
+            do {
+
+                String usuario;
+                usuario = pedirCadena("¿Usuario");
+                String contraseña;
+                contraseña = pedirCadena("¿Contraseña?");
+                existeJugador(misJugadores, usuario, contraseña);
+                if (existeJugador(misJugadores, usuario, contraseña) == true) {
+                    for (Cartas c : misCartas) {
+                        System.out.println(contador + "" + c);
+                        contador++;
+                        jugadores++;
+                    }
+                }
+                do {
+
+                    primeroEnAtacar(misJugadores, misCartas);
+
+                    int elegirCarta;
+
+                    elegirCarta = pedirEntero("¿Qué Carta quieres escoger?");
+                    Jugador jugadorActual = obtenerJugadorPorUsuario(misJugadores, usuario);
+                    // me traigo la carta?
+
+                    if (cartaActual) {
+
+                    } else {
+                        // clone
+                       Cartas clonacion = misCartas.get(0).clone();
+                        misCartas.add(clonacion);
+                        CartasElegidas++;
+                        sumaElixir(misCartas, clonacion);
+
+                    }
+
+                } while (CartasElegidas == 3);
+
+            } while (jugadores == 2);
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    // Obtener el ranking de jugadores por no de trofeos. Deberá mostrarse el nombre del jugador y el no de trofeos que tiene, ordenador de mayor a menor.
+    private final Set<Jugador> jugadores = new HashSet<>();
+
+    public Optional<Jugador> RankingJugadoresNumeroTrofes() {
+
+        return jugadores.stream().mapToInt(kol::getnumeroTrofeos).sorted().count();
 
     }
 
@@ -136,13 +205,77 @@ public class StucomRoyal {
         return false;
     }
 
-    public static String existeCarta(List<Cartas> misCartas, String nombreUsuario) {
-        for (Cartas c : misCartas) {
-            if (c.getNombre().equalsIgnoreCase(nombreUsuario)) {
-                return nombreUsuario;
+    public static boolean buscarCarta(List<Cartas> CartasJuego, Cartas cartaSeleccionada) {
+        for (Cartas c : CartasJuego) {
+            if (c.getNombre().equals(cartaSeleccionada.getNombre())) {
+                return true;
             }
         }
-        return "";
+        return false;
+
     }
 
+    public static Jugador obtenerJugadorPorUsuario(List<Jugador> jugadores, String nombreUsuario) {
+        for (Jugador j : jugadores) {
+            if (j.getNombreUsuario().equalsIgnoreCase(nombreUsuario)) {
+                return j;
+            }
+        }
+        return null;
+    }
+
+    //!!
+    // La suma del elixir de las cartas que escoja no podrá ser superior a 10.
+    public static boolean sumaElixir(List<Cartas> CartasJuego, Cartas cartaSeleccionada) {
+        for (Cartas c : CartasJuego) {
+            do {
+                cartaSeleccionada.getCosteElixir()
+                        
+                if () {
+                    System.out.println("¡Elixir Demasiado Alto!");
+                    return false;
+
+                } else {
+                    System.out.println("¡Elixir Correcto!");
+                    return true;
+                }
+
+            } while (c.getCosteElixir() > 10);
+        }
+
+        return false;
+    }
+
+    public static boolean primeroEnAtacar(List<Jugador> misJugadores, List<Cartas> CartasJuego) {
+
+        //Se decidirá aleatoriamente quien es el que ataca primero. 
+        double numAleatorio = Math.random() * 20;
+
+        if (numAleatorio < 20 && numAleatorio > 10) {
+
+            //Jugador que empieza
+            Jugador jugador1 = misJugadores.get(0);
+
+            //la primera carta que escoge
+            Cartas cartaEmpieza = CartasJuego.get(0);
+
+            //se la asignamos
+            Jugador jugador1 = CartasJuego.add(cartaEmpieza);
+
+            //Siguiente Jugador lo mismo?
+            Cartas cartaEmpiezaJ2 = CartasJuego.get(0);
+
+            // si pasa tal tal y tal trofeos a 5
+            if (cartaEmpieza.getNivelVida() > cartaEmpiezaJ2.getNivelVida()) {
+                misJugadores.get(0).setNumeroTrofes(5);
+
+            }
+
+            //
+        } else {
+
+        }
+        return false;
+
+    }
 }
