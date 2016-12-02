@@ -58,9 +58,10 @@ public class Cartas implements Cloneable {
         return "Cartas{" + "nombre=" + nombre + ", costeElixir=" + costeElixir + ", nivelVida=" + nivelVida + '}';
     }
 
-    @Override
+   /* @Override
     protected Object clone() throws CloneNotSupportedException {
-        return clone(); //To change body of generated methods, choose Tools | Templates.
-    }
+        //return clone(); //To change body of generated methods, choose Tools | Templates.
+       
+    }*/
 
 }

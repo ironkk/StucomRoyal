@@ -8,6 +8,7 @@ package stucomroyal;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,9 @@ import static stucomroyal.Entrada.pedirEntero;
  */
 // En el método principal de la aplicación, crea al menos 3 cartas de cada tipo (tropa, estructura y hechizo) y guárdalas como las cartas disponibles para el juego.
 public class StucomRoyal {
+
+    public static List<Jugador> misJugadores = new ArrayList<>(4);
+    public static List<Jugador> misJugadoresordenados = new ArrayList<>(4);
 
     /**
      * @param args the command line arguments
@@ -44,54 +48,52 @@ public class StucomRoyal {
         misCartas.add(umpalumpa6);
 
         // Crea al menos 4 jugadores. Inicialmente su no de trofeos debe ser 0 y no deben tener ninguna carta disponible.
-        List<Jugador> misJugadores = new ArrayList<>(4);
         Jugador mark = new Jugador("Mark", "Xaviele123", 0);
         Jugador xavi = new Jugador("Xavi", "Xaviele234", 0);
         Jugador debuen = new Jugador("Debuen", "Xaviele345", 0);
         Jugador manzano = new Jugador("Manzano", "Xaviele456", 0);
+        Jugador crack = new Jugador("Francesc", "cesc", 0);
         misJugadores.add(xavi);
         misJugadores.add(mark);
         misJugadores.add(debuen);
         misJugadores.add(manzano);
 
-        int opcion;
+        switch (mostrarMenu()) {
+            case 1:
+                ConseguirCartas(misJugadores, misCartas);
+                break;
+            case 2:
+                Batalla(misJugadores, misCartas);
+                break;
+            case 3:
+                misJugadoresordenados = RankingJugadoresNumeroTrofeos();
+                break;
+            case 4:
+                System.out.println("Adiós!");
+                System.exit(0);
+                break;
 
-        do {
+            default:
+                System.out.println("Opción incorrecta.");
 
-            mostrarMenu();
-            opcion = Entrada.pedirEntero("Escoge una opción");
-
-            switch (opcion) {
-                case 1:
-                    ConseguirCartas(misJugadores, misCartas);
-                    break;
-                case 2:
-                    Batalla(misJugadores, misCartas);
-                    break;
-                case 3:
-                    RankingJugadoresNumeroTrofeos();
-                    break;
-                case 4:
-                    System.out.println("Adiós!");
-                    System.exit(0);
-                    break;
-
-                default:
-                    System.out.println("Opción incorrecta.");
-
-            }
-
-        } while (opcion != 0);
+        }
 
     }
 
-    private static void mostrarMenu() {
-        System.out.println("*** StucomRoyal ***");
-        System.out.println("1. Conseguir cartas.");
-        System.out.println("2. Batalla.");
-        System.out.println("3. Obtener el ránking de jugadores por no de trofeos.");
-        System.out.println("4. Salir");
+ private static int mostrarMenu() {
+       int opcion = -1; 
 
+        do {
+
+            System.out.println("*** StucomRoyal ***");
+            System.out.println("1. Conseguir cartas.");
+            System.out.println("2. Batalla.");
+            System.out.println("3. Obtener el ránking de jugadores por no de trofeos.");
+            System.out.println("4. Salir");
+            opcion = Entrada.pedirEntero("Escoge una opción");
+
+        } while (opcion < 1 || opcion > 4);
+        return opcion;
     }
 
     public static void ConseguirCartas(List<Jugador> misJugadores, List<Cartas> misCartas) {
@@ -171,7 +173,7 @@ public class StucomRoyal {
 
                     } else {
                         // clone
-                       Cartas clonacion = misCartas.get(0).clone();
+                        Cartas clonacion = misCartas.get(0).clone();
                         misCartas.add(clonacion);
                         CartasElegidas++;
                         sumaElixir(misCartas, clonacion);
@@ -190,10 +192,14 @@ public class StucomRoyal {
     // Obtener el ranking de jugadores por no de trofeos. Deberá mostrarse el nombre del jugador y el no de trofeos que tiene, ordenador de mayor a menor.
     private final Set<Jugador> jugadores = new HashSet<>();
 
-    public Optional<Jugador> RankingJugadoresNumeroTrofes() {
+    public static List<Jugador> RankingJugadoresNumeroTrofeos() {
 
-        return jugadores.stream().mapToInt(kol::getnumeroTrofeos).sorted().count();
+        //  return jugadores.stream().mapToInt(kol::getnumeroTrofeos).sorted().count();
+        //misJugadores.sort(<Jugador>numerotrofes);
+        //return misJugadores.sort(campo numerotrofes a ordenar);
+        return misJugadores;
 
+        //return new Jugador("maxtrofeos","maxtrofeos",0);
     }
 
     public static boolean existeJugador(List<Jugador> misJugadores, String usuario, String contraseña) {
@@ -226,12 +232,13 @@ public class StucomRoyal {
 
     //!!
     // La suma del elixir de las cartas que escoja no podrá ser superior a 10.
+    //PENDIENTE DE ARREGLAR
     public static boolean sumaElixir(List<Cartas> CartasJuego, Cartas cartaSeleccionada) {
         for (Cartas c : CartasJuego) {
             do {
-                cartaSeleccionada.getCosteElixir()
-                        
-                if () {
+                // cartaSeleccionada.getCosteElixir()
+
+                if (true) {
                     System.out.println("¡Elixir Demasiado Alto!");
                     return false;
 
@@ -260,7 +267,7 @@ public class StucomRoyal {
             Cartas cartaEmpieza = CartasJuego.get(0);
 
             //se la asignamos
-            Jugador jugador1 = CartasJuego.add(cartaEmpieza);
+            misJugadores.get(0) = CartasJuego.add(cartaEmpieza);
 
             //Siguiente Jugador lo mismo?
             Cartas cartaEmpiezaJ2 = CartasJuego.get(0);
@@ -278,4 +285,5 @@ public class StucomRoyal {
         return false;
 
     }
+
 }
