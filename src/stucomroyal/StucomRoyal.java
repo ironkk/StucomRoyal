@@ -66,7 +66,7 @@ public class StucomRoyal {
                 Batalla(misJugadores, misCartas, umpalumpa);
                 break;
             case 3:
-                misJugadoresordenados = RankingJugadoresNumeroTrofeos();
+                ranking(misJugadores);
                 break;
             case 4:
                 System.out.println("Adiós!");
@@ -105,10 +105,7 @@ public class StucomRoyal {
         contraseña = pedirCadena("¿Contraseña?");
 
         if (existeJugador(misJugadores, usuario, contraseña) == true) {
-            for (Cartas c : misCartas) {
-                System.out.println(contador + " " + c);
-                contador++;
-            }
+            mostrarCartas(misCartas);
 
             int cartasAñadir = pedirEntero("¿Qué Cartas quieres añadir?");
             // Necesitamos traer al jugador
@@ -137,54 +134,17 @@ public class StucomRoyal {
 
     }
 
-    
     // ACABAR INTERACCION DE CARTAS
-    public static void Batalla(List<Jugador> misJugadores, List<Cartas> misCartas, Cartas cartaElegida, String nombre) {
+    public static void Batalla(List<Jugador> misJugadores, List<Cartas> misCartas, Cartas cartaElegida) {
         try {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            int contador = 0;
-            int cartas = 0;
-            int CartasElegidas = 0;
+
             int jugadores = 0;
 
             do {
-
-                String usuario;
-                usuario = pedirCadena("¿Usuario");
-                String contraseña;
-                contraseña = pedirCadena("¿Contraseña?");
-                existeJugador(misJugadores, usuario, contraseña);
-                if (existeJugador(misJugadores, usuario, contraseña) == true) {
-                    for (Cartas c : misCartas) {
-                        System.out.println(contador + "" + c);
-                        contador++;
-                        jugadores++;
-                    }
-                }
-                do {
-
-                    primeroEnAtacar(misJugadores, misCartas, cartaElegida);
-
-                    int elegirCarta;
-
-                    elegirCarta = pedirEntero("¿Qué Carta quieres escoger?");
-                    Jugador jugadorActual = obtenerJugadorPorUsuario(misJugadores, usuario);
-                    // me traigo la carta?
-                    Cartas cartaSeleccionada = buscarCartaElegida(misCartas, cartaElegida);
-
-                    if (cartaSeleccionada.getNombre().equalsIgnoreCase(nombre)) {
-                        sumaElixir(misCartas, cartaSeleccionada);
-                    } else {
-                        // clone
-                        Cartas clonacion = misCartas.get(0);
-                        misCartas.add(clonacion);
-                        CartasElegidas++;
-                        sumaElixir(misCartas, clonacion);
-
-                    }
-
-                } while (CartasElegidas == 3);
+                elegirCarta(misJugadores, misCartas, cartaElegida);
+                jugadores++;
 
             } while (jugadores == 2);
 
@@ -193,18 +153,31 @@ public class StucomRoyal {
         }
     }
 
-    
-    
-        // INTENTAR HACER RANKING DE TROFEOS MIRAR JAVA 8 HASHSET SENTENCIA CON EL SORTED Y COUNT.
-    private final Set<Jugador> jugadores = new HashSet<>();
-    public static List<Jugador> RankingJugadoresNumeroTrofeos() {
+    // INTENTAR HACER RANKING DE TROFEOS MIRAR JAVA 8 HASHSET SENTENCIA CON EL SORTED Y COUNT.
+    public static void ranking(List<Jugador> jugador) {
+        int contador = 0;
 
-       // return jugadores.stream().mapToInt(trofeos::getnumeroTrofeos).sorted().count();   **
-        //misJugadores.sort(<Jugador>numerotrofes);
-        //return misJugadores.sort(campo numerotrofes a ordenar);
-        return misJugadores;
+        Collections.sort(jugador, trofes);
+        
+        
+        System.out.println("Ranking Trofeos");
+        for (Jugador j : jugador) {
+            System.out.println("");
+            System.out.println(contador + " - " + j.getNombreUsuario() + ", trofeos: " + j.getNumeroTrofes());
+            contador++;
+        }
+    }
 
-        //return new Jugador("maxtrofeos","maxtrofeos",0);
+    public static Jugador validar(List<Jugador> jugador) {
+        String usuario = pedirCadena("Introduce el usuario:");
+        String password = pedirCadena("Introduce la contraseña:");
+        Jugador validar = null;
+        for (Jugador j : jugador) {
+            if (j.getNombreUsuario().equalsIgnoreCase(usuario) && j.getPassword().equalsIgnoreCase(password)) {
+                validar = j;
+            }
+        }
+        return validar;
     }
 
     public static boolean existeJugador(List<Jugador> misJugadores, String usuario, String contraseña) {
@@ -214,6 +187,14 @@ public class StucomRoyal {
             }
         }
         return false;
+    }
+
+    public static void mostrarCartas(List<Cartas> cartas) {
+        int contador = 0;
+        for (Cartas c : cartas) {
+            System.out.println(contador + " " + c);
+            contador++;
+        }
     }
 
     public static boolean buscarCarta(List<Cartas> CartasJuego, Cartas cartaSeleccionada) {
@@ -234,7 +215,7 @@ public class StucomRoyal {
             }
         }
         System.out.println("");
-return null;
+        return null;
     }
 
     public static Jugador obtenerJugadorPorUsuario(List<Jugador> jugadores, String nombreUsuario) {
@@ -267,7 +248,46 @@ return null;
         return null;
     }
 
-    
+    public static void elegirCarta(List<Jugador> misJugadores, List<Cartas> misCartas, Cartas cartaElegida) {
+        String usuario;
+        int CartasElegidas = 0;
+        usuario = pedirCadena("¿Usuario");
+        String contraseña;
+        contraseña = pedirCadena("¿Contraseña?");
+        existeJugador(misJugadores, usuario, contraseña);
+        if (existeJugador(misJugadores, usuario, contraseña) == true) {
+            mostrarCartas(misCartas);
+
+        }
+        do {
+
+            primeroEnAtacar(misJugadores, misCartas, cartaElegida);
+
+            int elegirCarta;
+
+            elegirCarta = pedirEntero("¿Qué Carta quieres escoger?");
+            Jugador jugadorActual = obtenerJugadorPorUsuario(misJugadores, usuario);
+            // me traigo la carta?
+            Cartas cartaSeleccionada = buscarCartaElegida(misCartas, cartaElegida);
+            
+            //??
+            jugadorActual.getCartasJuego();
+            // nombre?
+            if (cartaSeleccionada.getNombre().equalsIgnoreCase(nombre)) {
+                sumaElixir(misCartas, cartaSeleccionada);
+            } else {
+                // clone
+                Cartas clonacion = misCartas.get(0);
+                misCartas.add(clonacion);
+                CartasElegidas++;
+                sumaElixir(misCartas, clonacion);
+
+            }
+
+        } while (CartasElegidas == 3);
+
+    }
+
     // ARREGLAR ESTE METODO
     public static boolean primeroEnAtacar(List<Jugador> misJugadores, List<Cartas> CartasJuego, Cartas cartaElegida) {
 
@@ -282,18 +302,17 @@ return null;
             //la primera carta que escoge
             Cartas cartaEmpieza = buscarCartaElegida(CartasJuego, cartaElegida);
 
-            //se la asignamos
+     //====       //se la asignamos BOOLEAN???????
             jugador1 = CartasJuego.add(cartaEmpieza);
 
-            
             //Jugador 2
-             Jugador jugador2 = misJugadores.get(1);
-            
+            Jugador jugador2 = misJugadores.get(1);
+
             //Siguiente Jugador lo mismo?
             Cartas cartaEmpiezaJ2 = buscarCartaElegida(CartasJuego, cartaElegida);
-            
+
             jugador2 = CartasJuego.add(cartaEmpiezaJ2);
-            
+
             // si pasa tal tal y tal trofeos a 5
             if (cartaEmpieza.getNivelVida() > cartaEmpiezaJ2.getNivelVida()) {
                 misJugadores.get(0).setNumeroTrofes(5);
